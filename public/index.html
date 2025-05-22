@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 파트너스 블로그 포스팅 생성기</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #346aff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #346aff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2b5cd9;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+        .copy-button {
+            background-color: #28a745;
+            margin-top: 10px;
+        }
+        .copy-button:hover {
+            background-color: #218838;
+        }
+        .copy-success {
+            color: #28a745;
+            margin-top: 10px;
+            display: none;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            color: #856404;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>쿠팡 파트너스 블로그 포스팅 생성기</h1>
+        
+        <div class="input-group">
+            <label for="keyword">검색 키워드:</label>
+            <input type="text" id="keyword" placeholder="상품 키워드를 입력하세요">
+        </div>
+        
+        <button onclick="generatePost()" id="generateButton">포스팅 생성하기</button>
+        
+        <div class="loading" id="loading">
+            포스팅을 생성하는 중입니다...
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result" id="result">
+            <div id="blogPost"></div>
+            <button class="copy-button" onclick="copyContent()">HTML 복사하기</button>
+            <div class="copy-success" id="copySuccess">복사되었습니다!</div>
+        </div>
+
+        <div class="disclaimer">
+            * 본 도구는 쿠팡 파트너스 활동을 통해 수수료를 제공받을 수 있습니다.
+        </div>
+    </div>
+
+    <script>
+        async function generatePost() {
+            const keyword = document.getElementById('keyword').value.trim();
+            if (!keyword) {
+                showError('키워드를 입력해주세요.');
+                return;
+            }
+
+            const generateButton = document.getElementById('generateButton');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const error = document.getElementById('error');
+            const blogPost = document.getElementById('blogPost');
+
+            generateButton.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            error.style.display = 'none';
+
+            try {
+                const response = await fetch('/generate-post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ keyword })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || '포스팅 생성에 실패했습니다.');
+                }
+
+                blogPost.innerHTML = data.blogPost;
+                result.style.display = 'block';
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                generateButton.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        function copyContent() {
+            const blogPost = document.getElementById('blogPost');
+            const copySuccess = document.getElementById('copySuccess');
+            
+            // HTML 내용을 복사
+            const content = blogPost.innerHTML;
+            navigator.clipboard.writeText(content).then(() => {
+                copySuccess.style.display = 'block';
+                setTimeout(() => {
+                    copySuccess.style.display = 'none';
+                }, 2000);
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                showError('복사에 실패했습니다.');
+            });
+        }
+    </script>
+</body>
+</html> 
