@@ -5,136 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>쿠팡 파트너스 블로그 포스팅 생성기</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: 'Noto Sans KR', sans-serif;
         max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 10px;
         background-color: #f5f5f5;
       }
+
       .container {
         background-color: white;
-        padding: 20px;
+        padding: 15px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 100%;
       }
+
       h1 {
         color: #346aff;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        word-break: keep-all;
+        line-height: 1.4;
       }
+
       .input-group {
         margin-bottom: 20px;
       }
+
       label {
         display: block;
         margin-bottom: 8px;
         color: #333;
         font-weight: 500;
+        font-size: 14px;
       }
+
       input[type='text'] {
         width: 100%;
-        padding: 10px;
+        max-width: 100%;
+        padding: 12px;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s;
       }
+
+      input[type='text']:focus {
+        border-color: #346aff;
+      }
+
       .checkbox-group {
         display: flex;
         align-items: center;
         margin-bottom: 20px;
+        flex-wrap: wrap;
       }
+
       .checkbox-group input[type='checkbox'] {
         margin-right: 8px;
         transform: scale(1.2);
+        flex-shrink: 0;
       }
+
       .checkbox-group label {
         margin-bottom: 0;
         cursor: pointer;
+        font-size: 14px;
+        word-break: keep-all;
       }
+
       button {
         background-color: #346aff;
         color: white;
         border: none;
-        padding: 12px 24px;
+        padding: 12px 20px;
         border-radius: 4px;
         cursor: pointer;
         font-size: 16px;
         width: 100%;
+        max-width: 100%;
         transition: background-color 0.3s;
+        word-break: keep-all;
       }
+
       button:hover {
         background-color: #2b5cd9;
       }
+
       button:disabled {
         background-color: #ccc;
         cursor: not-allowed;
       }
+
       .result {
         margin-top: 20px;
-        padding: 20px;
+        padding: 15px;
         border: 1px solid #ddd;
         border-radius: 4px;
         background-color: #fff;
         display: none;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
       }
+
+      .result #blogPost {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .result #blogPost * {
+        max-width: 100% !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .result #blogPost img {
+        max-width: 100% !important;
+        height: auto !important;
+      }
+
       .wordpress-result {
         margin-top: 20px;
         padding: 15px;
         border-radius: 4px;
         display: none;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
+
       .wordpress-success {
         background-color: #d4edda;
         border: 1px solid #c3e6cb;
         color: #155724;
       }
+
       .wordpress-error {
         background-color: #f8d7da;
         border: 1px solid #f5c6cb;
         color: #721c24;
       }
+
       .wordpress-url {
         margin-top: 10px;
         word-break: break-all;
+        overflow-wrap: break-word;
       }
+
       .wordpress-url a {
         color: #346aff;
         text-decoration: none;
+        word-break: break-all;
       }
+
       .wordpress-url a:hover {
         text-decoration: underline;
       }
+
       .loading {
         text-align: center;
         display: none;
         margin: 20px 0;
+        font-size: 14px;
       }
+
       .error {
         color: #dc3545;
         margin-top: 10px;
         display: none;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        font-size: 14px;
       }
+
       .copy-button {
         background-color: #28a745;
         margin-top: 10px;
       }
+
       .copy-button:hover {
         background-color: #218838;
       }
+
       .wordpress-manual-button {
         background-color: #17a2b8;
         margin-top: 10px;
-        margin-left: 10px;
+        margin-left: 0;
       }
+
       .wordpress-manual-button:hover {
         background-color: #138496;
       }
+
       .copy-success {
         color: #28a745;
         margin-top: 10px;
         display: none;
+        font-size: 14px;
       }
+
       .disclaimer {
         margin-top: 20px;
         padding: 15px;
@@ -142,16 +219,137 @@
         border: 1px solid #ffeeba;
         border-radius: 4px;
         color: #856404;
-        font-size: 14px;
+        font-size: 12px;
+        word-break: keep-all;
+        line-height: 1.5;
       }
+
       .button-group {
         display: flex;
         gap: 10px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        margin-top: 15px;
       }
+
       .button-group button {
         flex: 1;
-        min-width: 150px;
+        min-width: auto;
+        margin-top: 0;
+        margin-left: 0;
+      }
+
+      /* 태블릿 이상 */
+      @media (min-width: 576px) {
+        body {
+          padding: 20px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+          margin-bottom: 30px;
+        }
+
+        .button-group {
+          flex-direction: row;
+        }
+
+        .button-group button {
+          min-width: 150px;
+        }
+
+        .wordpress-manual-button {
+          margin-left: 10px;
+        }
+
+        .disclaimer {
+          font-size: 14px;
+        }
+
+        label {
+          font-size: 16px;
+        }
+
+        .checkbox-group label {
+          font-size: 16px;
+        }
+
+        .loading {
+          font-size: 16px;
+        }
+
+        .error {
+          font-size: 16px;
+        }
+
+        .copy-success {
+          font-size: 16px;
+        }
+      }
+
+      /* 데스크톱 */
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+      }
+
+      /* 모바일 가로 방향 및 작은 화면 대응 */
+      @media (max-width: 575px) {
+        body {
+          padding: 5px;
+        }
+
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.3rem;
+          margin-bottom: 15px;
+        }
+
+        input[type='text'] {
+          padding: 10px;
+          font-size: 16px; /* iOS에서 줌 방지 */
+        }
+
+        button {
+          padding: 10px 15px;
+          font-size: 14px;
+        }
+
+        .result {
+          padding: 10px;
+        }
+
+        .wordpress-result {
+          padding: 10px;
+        }
+
+        .disclaimer {
+          padding: 10px;
+          font-size: 11px;
+        }
+      }
+
+      /* 매우 작은 화면 (320px 이하) */
+      @media (max-width: 320px) {
+        h1 {
+          font-size: 1.1rem;
+        }
+
+        button {
+          font-size: 13px;
+          padding: 8px 12px;
+        }
+
+        .disclaimer {
+          font-size: 10px;
+        }
       }
     </style>
   </head>
