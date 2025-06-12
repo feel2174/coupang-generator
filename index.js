@@ -5,6 +5,7 @@ const OpenAI = require('openai');
 const crypto = require('crypto');
 const path = require('path');
 const moment = require('moment');
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
@@ -38,6 +39,22 @@ const COUPANG_SECRET_KEY = process.env.COUPANG_SECRET_KEY;
 const WP_URL = process.env.WP_URL;
 const WP_USER = process.env.WP_USER;
 const WP_PASSWORD = process.env.WP_PASSWORD;
+
+// 프롬프트 파일 읽기 함수
+function loadPrompt(filename) {
+  try {
+    const promptPath = path.join(__dirname, 'prompts', filename);
+    if (fs.existsSync(promptPath)) {
+      return fs.readFileSync(promptPath, 'utf8');
+    } else {
+      console.warn(`프롬프트 파일을 찾을 수 없습니다: ${promptPath}`);
+      return null;
+    }
+  } catch (error) {
+    console.error('프롬프트 파일 읽기 에러:', error);
+    return null;
+  }
+}
 
 function generateCoupangSignature(method, url) {
   try {
@@ -177,96 +194,23 @@ async function generateBlogPost(products, keyword) {
       throw new Error('가공된 상품 정보가 없습니다.');
     }
 
-    const prompt = `
-너는 고급 제품 리뷰 전문 작가이자 SEO 전문가야. 검색엔진과 사용자 모두를 만족시키는 매력적인 리뷰를 작성해줘.
+    // 프롬프트 우선순위: 1) .env 파일, 2) 프롬프트 파일, 3) 기본 프롬프트
+    let promptTemplate = process.env.BLOG_POST_PROMPT; // .env에서 읽기
 
-[제목 작성 가이드]
-- 검색 키워드 + 감정을 자극하는 문장 (예: "${keyword} 후기 - 솔직하게 말해보는 장단점과 구매 가이드")
-- 감정 키워드 예시: 솔직한, 놀라운, 완벽한, 실망스러운, 게임체인저, 믿을 수 없는
+    if (!promptTemplate) {
+      promptTemplate = loadPrompt('blog-post-prompt.txt'); // 파일에서 읽기
+    }
 
-[HTML 구조 - 반드시 이 순서대로 작성]
+    if (!promptTemplate) {
+      console.warn('프롬프트를 찾을 수 없어 기본 프롬프트를 사용합니다.');
+      promptTemplate =
+        '간단한 상품 리뷰를 작성해주세요. 상품 정보: {productInfo}, 키워드: {keyword}';
+    }
 
-1. 포스팅 시작:
-<article>
-  <h1 style="color:#222; font-weight:900; font-size:2em; margin-bottom:20px; line-height:1.3;">[검색키워드 + 감정문구 제목]</h1>
-
-  <!-- 3줄 요약 도입부 -->
-  <div style="background:#f8f9fa; padding:20px; border-left:4px solid #346aff; margin:20px 0; border-radius:8px;">
-    <p style="font-size:1.1em; color:#333; margin:5px 0; font-weight:500;">✅ [사용자의 고민 1]: 이런 문제로 고민하고 계시나요?</p>
-    <p style="font-size:1.1em; color:#333; margin:5px 0; font-weight:500;">✅ [사용자의 고민 2]: 어떤 제품을 선택해야 할지 막막하시죠?</p>
-    <p style="font-size:1.1em; color:#333; margin:5px 0; font-weight:500;">✅ [결론]: 이 글을 통해 ${keyword}의 모든 궁금증을 해결하세요!</p>
-  </div>
-
-  <div style="display:flex; flex-wrap:wrap; align-items:center; margin-bottom:25px;">
-    <a href="[상품링크]" target="_blank" rel="noopener noreferrer">
-      <img src="[상품이미지]" alt="[상품명]" style="max-width:300px; border-radius:12px; margin-right:24px; box-shadow:0 4px 12px rgba(52,106,255,0.09);"/>
-    </a>
-    <div style="flex:1;">
-      <div style="font-size:1.3em; color:#346aff; font-weight:bold; margin-bottom:8px;">
-        [상품명]
-      </div>
-      <div style="font-size:1.1em; color:#555; margin-bottom:4px;">
-        카테고리: [카테고리]
-      </div>
-      <div style="font-size:1.1em; color:#222;">
-        가격: <span style="color:#346aff; font-weight:bold;">[가격]원</span>
-      </div>
-      <a href="[상품링크]" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:12px; padding:12px 20px; background:#346aff; color:#fff; border-radius:8px; font-weight:600; text-decoration:none; font-size:1.1em;">
-        🛒 지금 바로 확인하기
-      </a>
-    </div>
-  </div>
-
-2. 본문 구성 (H2/H3 체계적 구성):
-<h2 style="color:#346aff; font-weight:bold; font-size:1.5em; margin-top:30px; margin-bottom:15px;">${keyword} 선택한 이유</h2>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">구매 전 고민했던 점들</h3>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">최종 결정한 핵심 이유</h3>
-
-<h2 style="color:#346aff; font-weight:bold; font-size:1.5em; margin-top:30px; margin-bottom:15px;">${keyword} 실제 사용 후기</h2>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">첫 사용 인상</h3>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">장기 사용 경험</h3>
-
-<!-- 중간 CTA -->
-<div style="background:linear-gradient(135deg, #346aff, #4dabf7); padding:20px; border-radius:12px; text-align:center; margin:30px 0; color:white;">
-  <h3 style="color:white; margin-bottom:10px;">💡 지금이 구매 타이밍인 이유</h3>
-  <p style="margin-bottom:15px; font-size:1.1em;">더 늦기 전에 확인해보세요!</p>
-  <a href="[상품링크]" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:12px 30px; background:white; color:#346aff; border-radius:8px; font-weight:600; text-decoration:none; font-size:1.1em;">
-    🎯 최저가 확인하기
-  </a>
-</div>
-
-<h2 style="color:#346aff; font-weight:bold; font-size:1.5em; margin-top:30px; margin-bottom:15px;">${keyword} 솔직한 단점</h2>
-
-<h2 style="color:#346aff; font-weight:bold; font-size:1.5em; margin-top:30px; margin-bottom:15px;">${keyword} 총평 및 추천</h2>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">이런 분께 추천합니다</h3>
-<h3 style="color:#333; font-weight:600; font-size:1.2em; margin-top:20px;">구매 전 체크리스트</h3>
-
-3. 마무리 (요약 + 관련 글):
-<div style="background:#f8f9fa; padding:20px; border-radius:8px; margin:30px 0;">
-  <h3 style="color:#346aff; margin-bottom:15px;">📝 ${keyword} 리뷰 요약</h3>
-  <p style="font-size:1.1em; line-height:1.6; color:#333; margin-bottom:10px;">• [핵심 장점 요약 1줄]</p>
-  <p style="font-size:1.1em; line-height:1.6; color:#333;">• [구매 결정에 도움되는 정보 1줄]</p>
-</div>
-
-<div style="border-top:2px solid #346aff; padding-top:20px; margin-top:30px;">
-  <h3 style="color:#346aff; margin-bottom:15px;">🔗 함께 보면 좋은 글</h3>
-  <p style="font-size:1.1em; color:#666;">
-    • <a href="#" style="color:#346aff; text-decoration:none;">[카테고리] 추천 제품 비교 가이드</a><br>
-    • <a href="#" style="color:#346aff; text-decoration:none;">[카테고리] 구매 전 필수 체크사항</a><br>
-    • <a href="#" style="color:#346aff; text-decoration:none;">[관련 키워드] 사용법 완벽 가이드</a>
-  </p>
-</div>
-
-[작성 가이드라인]
-- 모든 텍스트: style="font-size:1.1em; line-height:1.6; color:#333;"
-- 강조 내용: <strong style="color:#346aff;">텍스트</strong>
-- 각 섹션 최소 300자 이상, 구체적이고 개인적인 경험 위주
-- 광고 느낌 없이 진솔한 사용자 후기 톤
-- 키워드를 자연스럽게 H2/H3에 반복 사용
-- 중간중간 이모지 활용으로 가독성 향상
-
-상품 정보: ${JSON.stringify(productInfo, null, 2)}
-키워드: ${keyword}`;
+    // 템플릿 변수 치환
+    const prompt = promptTemplate
+      .replace(/{keyword}/g, keyword)
+      .replace(/{productInfo}/g, JSON.stringify(productInfo, null, 2));
 
     console.log('GPT API 요청 준비:', { prompt });
 
