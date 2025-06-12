@@ -28,21 +28,17 @@ if (!process.env.WP_URL || !process.env.WP_USER || !process.env.WP_PASSWORD) {
   );
 }
 
-// OpenAI 설정
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// 쿠팡 파트너스 API 설정
 const COUPANG_ACCESS_KEY = process.env.COUPANG_ACCESS_KEY;
 const COUPANG_SECRET_KEY = process.env.COUPANG_SECRET_KEY;
 
-// 워드프레스 설정
 const WP_URL = process.env.WP_URL;
 const WP_USER = process.env.WP_USER;
 const WP_PASSWORD = process.env.WP_PASSWORD;
 
-// 쿠팡 API 서명 생성 함수
 function generateCoupangSignature(method, url) {
   try {
     const parts = url.split(/\?/);
