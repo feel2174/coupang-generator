@@ -41,4 +41,7 @@ next-env.d.ts
 *.swo
 
 # OS specific
-Thumbs.db 
+Thumbs.db
+
+# 프롬프트 파일들 (민감한 비즈니스 로직)
+prompts/

@@ -37,9 +37,38 @@ OPENAI_API_KEY=your_openai_api_key
 WP_URL=https://your-wordpress-site.com/wp-json/wp/v2
 WP_USER=your_wordpress_username
 WP_PASSWORD=your_wordpress_app_password
+
+# 선택 설정 (커스텀 프롬프트)
+BLOG_POST_PROMPT="커스텀 프롬프트 내용..."
 ```
 
-### 3. 실행
+### 3. 프롬프트 설정 (선택사항)
+
+프롬프트를 커스터마이징하는 3가지 방법:
+
+#### 방법 1: 별도 파일로 관리 (추천 ⭐)
+```bash
+# 프롬프트 파일 생성
+cp prompts/blog-post-prompt.example.txt prompts/blog-post-prompt.txt
+
+# 파일 편집하여 원하는 프롬프트 작성
+vim prompts/blog-post-prompt.txt
+```
+
+#### 방법 2: .env 파일에 저장
+```env
+BLOG_POST_PROMPT="너는 전문 리뷰어야. 상품정보: {productInfo}, 키워드: {keyword}"
+```
+
+#### 방법 3: 우선순위 시스템
+1. **`.env의 BLOG_POST_PROMPT`** (최우선)
+2. **`prompts/blog-post-prompt.txt`** (두 번째)
+3. **기본 프롬프트** (마지막)
+
+> 📝 **템플릿 변수**: `{keyword}`, `{productInfo}` 사용 가능
+> 🔒 **보안**: `prompts/` 폴더는 `.gitignore`에 의해 Git에서 제외됨
+
+### 4. 실행
 
 ```bash
 npm start
@@ -132,6 +161,12 @@ npm run format
 - `temperature`: 창의성 수준 (기본값: 0.7)
 - `model`: 사용할 GPT 모델 (기본값: gpt-4.1)
 
+### 프롬프트 커스터마이징
+- **파일 방식**: `prompts/blog-post-prompt.txt`
+- **환경변수 방식**: `.env`의 `BLOG_POST_PROMPT`
+- **템플릿 변수**: `{keyword}`, `{productInfo}` 자동 치환
+- **우선순위**: .env → 파일 → 기본값
+
 ### 워드프레스 설정
 - 포스팅 상태: `draft` 또는 `publish`
 - 카테고리 자동 분류
@@ -140,9 +175,11 @@ npm run format
 ## ⚠️ 주의사항
 
 1. **API 키 보안**: `.env` 파일을 절대 공개 저장소에 업로드하지 마세요
-2. **이용약관 준수**: 쿠팡 파트너스 API 이용약관을 반드시 준수하세요
-3. **저작권**: 생성된 콘텐츠의 저작권과 책임은 사용자에게 있습니다
-4. **API 제한**: OpenAI API 사용량과 쿠팡 API 호출 제한을 확인하세요
+2. **프롬프트 보안**: `prompts/` 폴더는 자동으로 Git에서 제외됩니다
+3. **이용약관 준수**: 쿠팡 파트너스 API 이용약관을 반드시 준수하세요
+4. **저작권**: 생성된 콘텐츠의 저작권과 책임은 사용자에게 있습니다
+5. **API 제한**: OpenAI API 사용량과 쿠팡 API 호출 제한을 확인하세요
+6. **프롬프트 백업**: 중요한 프롬프트는 별도로 백업하세요
 
 ## 🤝 기여하기
 
@@ -168,6 +205,15 @@ npm run format
 
 **Q: 워드프레스 포스팅이 안 돼요**
 - A: 워드프레스 REST API가 활성화되어 있고, 애플리케이션 패스워드가 올바른지 확인해주세요.
+
+**Q: 커스텀 프롬프트가 적용되지 않아요**
+- A: 우선순위를 확인하세요: .env → prompts/blog-post-prompt.txt → 기본값
+
+**Q: 프롬프트 파일을 어떻게 만드나요?**
+- A: `cp prompts/blog-post-prompt.example.txt prompts/blog-post-prompt.txt` 실행 후 편집하세요.
+
+**Q: 프롬프트에서 템플릿 변수가 작동하지 않아요**
+- A: `{keyword}`와 `{productInfo}` 형식을 정확히 사용하고 있는지 확인해주세요.
 
 ---
 
