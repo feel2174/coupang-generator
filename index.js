@@ -352,24 +352,49 @@ async function postToWordPress(title, content, keyword) {
       },
       data: postData,
       timeout: 30000,
+      validateStatus: function (status) {
+        return status >= 200 && status < 500; // 200-499 상태 코드 허용
+      },
     });
 
-    console.log('워드프레스 포스팅 성공:', {
-      id: response.data.id,
-      title: response.data.title.rendered,
-      status: response.data.status,
-      link: response.data.link,
-      featuredImageId: featuredImageId,
-    });
+    // 응답이 HTML인 경우 처리
+    if (
+      typeof response.data === 'string' &&
+      response.data.includes('<!DOCTYPE html>')
+    ) {
+      console.error(
+        '워드프레스 API가 HTML을 반환했습니다:',
+        response.data.substring(0, 200),
+      );
+      return {
+        success: false,
+        error: '워드프레스 API 응답 오류',
+        message: '워드프레스 API가 예상치 못한 응답을 반환했습니다.',
+      };
+    }
 
-    return {
-      success: true,
-      postId: response.data.id,
-      postUrl: response.data.link,
-      status: response.data.status,
-      featuredImageId: featuredImageId,
-      message: '워드프레스에 성공적으로 포스팅되었습니다.',
-    };
+    // 응답이 JSON인 경우 정상 처리
+    if (response.data && response.data.id) {
+      console.log('워드프레스 포스팅 성공:', {
+        id: response.data.id,
+        title: response.data.title.rendered,
+        status: response.data.status,
+        link: response.data.link,
+        featuredImageId: featuredImageId,
+      });
+
+      return {
+        success: true,
+        postId: response.data.id,
+        postUrl: response.data.link,
+        status: response.data.status,
+        featuredImageId: featuredImageId,
+        message: '워드프레스에 성공적으로 포스팅되었습니다.',
+      };
+    }
+
+    // 기타 오류 처리
+    throw new Error('워드프레스 API 응답이 올바르지 않습니다.');
   } catch (error) {
     console.error('워드프레스 포스팅 에러:', {
       message: error.message,
