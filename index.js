@@ -443,6 +443,64 @@ function prepareContentForWordPress(htmlContent) {
   }
 }
 
+// 세션 관리를 위한 간단한 메모리 저장소
+const sessions = new Map();
+
+// 세션 생성 엔드포인트
+app.post('/api/verify-code', express.json(), (req, res) => {
+  const { code } = req.body;
+
+  if (code === 'coupang') {
+    // 세션 ID 생성 (현재 시간 + 랜덤 문자열)
+    const sessionId =
+      Date.now().toString(36) + Math.random().toString(36).substr(2);
+    // 세션 저장 (30분 유효)
+    sessions.set(sessionId, {
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 30 * 60 * 1000, // 30분
+    });
+
+    res.json({ success: true, sessionId });
+  } else {
+    res
+      .status(401)
+      .json({ success: false, message: '잘못된 접근 코드입니다.' });
+  }
+});
+
+// 세션 검증 엔드포인트
+app.get('/api/verify-session', (req, res) => {
+  const sessionId = req.headers['x-session-id'];
+
+  if (!sessionId || !sessions.has(sessionId)) {
+    return res
+      .status(401)
+      .json({ success: false, message: '인증되지 않은 접근입니다.' });
+  }
+
+  const session = sessions.get(sessionId);
+
+  // 세션 만료 확인
+  if (Date.now() > session.expiresAt) {
+    sessions.delete(sessionId);
+    return res
+      .status(401)
+      .json({ success: false, message: '세션이 만료되었습니다.' });
+  }
+
+  res.json({ success: true });
+});
+
+// 주기적으로 만료된 세션 정리 (1분마다)
+setInterval(() => {
+  const now = Date.now();
+  for (const [sessionId, session] of sessions.entries()) {
+    if (now > session.expiresAt) {
+      sessions.delete(sessionId);
+    }
+  }
+}, 60 * 1000);
+
 // API 엔드포인트
 app.post('/api/generate-post', async (req, res) => {
   console.log('새로운 요청 수신');

@@ -4,351 +4,149 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>쿠팡 파트너스 블로그 포스팅 생성기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --primary-color: #346aff;
+        --primary-hover: #2b5cd9;
+        --success-color: #28a745;
+        --success-hover: #218838;
+        --info-color: #17a2b8;
+        --info-hover: #138496;
+        --error-color: #dc3545;
+        --warning-color: #ffc107;
+        --text-color: #333;
+        --border-color: #ddd;
+        --bg-color: #f8f9fa;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
       body {
         font-family: 'Noto Sans KR', sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 10px;
-        background-color: #f5f5f5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 1rem;
       }
 
       .container {
-        background-color: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
         width: 100%;
-        max-width: 100%;
+        max-width: 400px;
+        text-align: center;
       }
 
       h1 {
-        color: #346aff;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
         word-break: keep-all;
         line-height: 1.4;
       }
 
+      .description {
+        margin-bottom: 2rem;
+        color: #666;
+        font-size: 0.95rem;
+      }
+
       .input-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
       }
 
       label {
         display: block;
-        margin-bottom: 8px;
-        color: #333;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
         font-weight: 500;
-        font-size: 14px;
+        font-size: 0.95rem;
       }
 
       input[type='text'] {
         width: 100%;
-        max-width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
         outline: none;
-        transition: border-color 0.3s;
+        transition: all 0.3s ease;
+        text-align: center;
+        letter-spacing: 0.1em;
       }
 
       input[type='text']:focus {
-        border-color: #346aff;
-      }
-
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .checkbox-group input[type='checkbox'] {
-        margin-right: 8px;
-        transform: scale(1.2);
-        flex-shrink: 0;
-      }
-
-      .checkbox-group label {
-        margin-bottom: 0;
-        cursor: pointer;
-        font-size: 14px;
-        word-break: keep-all;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(52, 106, 255, 0.1);
       }
 
       button {
-        background-color: #346aff;
+        background-color: var(--primary-color);
         color: white;
         border: none;
-        padding: 12px 20px;
-        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 1rem;
+        font-weight: 500;
         width: 100%;
-        max-width: 100%;
-        transition: background-color 0.3s;
-        word-break: keep-all;
+        transition: all 0.3s ease;
       }
 
       button:hover {
-        background-color: #2b5cd9;
-      }
-
-      button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      .result {
-        margin-top: 20px;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background-color: #fff;
-        display: none;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        max-width: 100%;
-      }
-
-      .result #blogPost {
-        max-width: 100%;
-        overflow-x: auto;
-      }
-
-      .result #blogPost * {
-        max-width: 100% !important;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-
-      .result #blogPost img {
-        max-width: 100% !important;
-        height: auto !important;
-      }
-
-      .wordpress-result {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 4px;
-        display: none;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-
-      .wordpress-success {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-      }
-
-      .wordpress-error {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-      }
-
-      .wordpress-url {
-        margin-top: 10px;
-        word-break: break-all;
-        overflow-wrap: break-word;
-      }
-
-      .wordpress-url a {
-        color: #346aff;
-        text-decoration: none;
-        word-break: break-all;
-      }
-
-      .wordpress-url a:hover {
-        text-decoration: underline;
-      }
-
-      .loading {
-        text-align: center;
-        display: none;
-        margin: 20px 0;
-        font-size: 14px;
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
       }
 
       .error {
         color: #dc3545;
-        margin-top: 10px;
+        margin-top: 1rem;
         display: none;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        font-size: 14px;
-      }
-
-      .copy-button {
-        background-color: #28a745;
-        margin-top: 10px;
-      }
-
-      .copy-button:hover {
-        background-color: #218838;
-      }
-
-      .wordpress-manual-button {
-        background-color: #17a2b8;
-        margin-top: 10px;
-        margin-left: 0;
-      }
-
-      .wordpress-manual-button:hover {
-        background-color: #138496;
-      }
-
-      .copy-success {
-        color: #28a745;
-        margin-top: 10px;
-        display: none;
-        font-size: 14px;
+        padding: 1rem;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 8px;
+        font-size: 0.95rem;
       }
 
       .disclaimer {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #fff3cd;
-        border: 1px solid #ffeeba;
-        border-radius: 4px;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: rgba(255, 193, 7, 0.1);
+        border: 1px solid #ffc107;
+        border-radius: 8px;
         color: #856404;
-        font-size: 12px;
-        word-break: keep-all;
-        line-height: 1.5;
+        font-size: 0.85rem;
+        line-height: 1.6;
       }
 
-      .button-group {
-        display: flex;
-        gap: 10px;
-        flex-direction: column;
-        margin-top: 15px;
-      }
-
-      .button-group button {
-        flex: 1;
-        min-width: auto;
-        margin-top: 0;
-        margin-left: 0;
-      }
-
-      /* 태블릿 이상 */
-      @media (min-width: 576px) {
-        body {
-          padding: 20px;
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text-color: #e1e1e1;
+          --bg-color: #1a1a1a;
+          --card-bg: #2d2d2d;
+          --border-color: #404040;
         }
 
-        .container {
-          padding: 20px;
-        }
-
-        h1 {
-          font-size: 1.8rem;
-          margin-bottom: 30px;
-        }
-
-        .button-group {
-          flex-direction: row;
-        }
-
-        .button-group button {
-          min-width: 150px;
-        }
-
-        .wordpress-manual-button {
-          margin-left: 10px;
+        .description {
+          color: #999;
         }
 
         .disclaimer {
-          font-size: 14px;
-        }
-
-        label {
-          font-size: 16px;
-        }
-
-        .checkbox-group label {
-          font-size: 16px;
-        }
-
-        .loading {
-          font-size: 16px;
-        }
-
-        .error {
-          font-size: 16px;
-        }
-
-        .copy-success {
-          font-size: 16px;
-        }
-      }
-
-      /* 데스크톱 */
-      @media (min-width: 768px) {
-        h1 {
-          font-size: 2rem;
-        }
-      }
-
-      /* 모바일 가로 방향 및 작은 화면 대응 */
-      @media (max-width: 575px) {
-        body {
-          padding: 5px;
-        }
-
-        .container {
-          padding: 10px;
-        }
-
-        h1 {
-          font-size: 1.3rem;
-          margin-bottom: 15px;
-        }
-
-        input[type='text'] {
-          padding: 10px;
-          font-size: 16px; /* iOS에서 줌 방지 */
-        }
-
-        button {
-          padding: 10px 15px;
-          font-size: 14px;
-        }
-
-        .result {
-          padding: 10px;
-        }
-
-        .wordpress-result {
-          padding: 10px;
-        }
-
-        .disclaimer {
-          padding: 10px;
-          font-size: 11px;
-        }
-      }
-
-      /* 매우 작은 화면 (320px 이하) */
-      @media (max-width: 320px) {
-        h1 {
-          font-size: 1.1rem;
-        }
-
-        button {
-          font-size: 13px;
-          padding: 8px 12px;
-        }
-
-        .disclaimer {
-          font-size: 10px;
+          background-color: rgba(255, 193, 7, 0.2);
         }
       }
     </style>
@@ -357,194 +155,65 @@
     <div class="container">
       <h1>쿠팡 파트너스 블로그 포스팅 생성기</h1>
 
+      <p class="description">
+        블로그 포스팅 생성을 위해 접근 코드를 입력해주세요.
+      </p>
+
       <div class="input-group">
-        <label for="keyword">검색 키워드:</label>
+        <label for="accessCode">접근 코드</label>
         <input
           type="text"
-          id="keyword"
-          placeholder="상품 키워드를 입력하세요"
+          id="accessCode"
+          placeholder="코드를 입력하세요"
+          aria-label="접근 코드"
+          maxlength="10"
         />
       </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="autoPostToWordPress" />
-        <label for="autoPostToWordPress"
-          >워드프레스에 자동 포스팅 (초안 저장)</label
-        >
-      </div>
-
-      <button onclick="generatePost()" id="generateButton">
-        포스팅 생성하기
+      <button onclick="checkAccessCode()" id="accessButton">
+        접근하기
       </button>
 
-      <div class="loading" id="loading">포스팅을 생성하는 중입니다...</div>
+      <div class="error" id="error" role="alert" aria-live="assertive"></div>
 
-      <div class="error" id="error"></div>
-
-      <div class="wordpress-result" id="wordpressResult">
-        <div id="wordpressMessage"></div>
-        <div class="wordpress-url" id="wordpressUrl"></div>
-      </div>
-
-      <div class="result" id="result">
-        <div id="blogPost"></div>
-        <div class="button-group">
-          <button class="copy-button" onclick="copyContent()">
-            HTML 복사하기
-          </button>
-          <button
-            class="wordpress-manual-button"
-            onclick="postToWordPress()"
-            id="wordpressManualButton"
-          >
-            워드프레스에 포스팅
-          </button>
-        </div>
-        <div class="copy-success" id="copySuccess">복사되었습니다!</div>
-      </div>
-
-      <div class="disclaimer">
-        * 본 도구는 쿠팡 파트너스 활동을 통해 수수료를 제공받을 수 있습니다.<br />
-        * 워드프레스 포스팅을 위해서는 서버의 환경변수 설정이 필요합니다.
+      <div class="disclaimer" role="complementary">
+        <p>* 본 도구는 쿠팡 파트너스 활동을 통해 수수료를 제공받을 수 있습니다.</p>
+        <p>* 워드프레스 포스팅을 위해서는 서버의 환경변수 설정이 필요합니다.</p>
       </div>
     </div>
 
     <script>
-      let currentBlogPost = '';
-      let currentKeyword = '';
-
-      async function generatePost() {
-        const keyword = document.getElementById('keyword').value.trim();
-        const autoPostToWordPress = document.getElementById(
-          'autoPostToWordPress',
-        ).checked;
-
-        if (!keyword) {
-          showError('키워드를 입력해주세요.');
-          return;
-        }
-
-        const generateButton = document.getElementById('generateButton');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
+      async function checkAccessCode() {
+        const accessCode = document.getElementById('accessCode').value.trim();
         const error = document.getElementById('error');
-        const blogPost = document.getElementById('blogPost');
-        const wordpressResult = document.getElementById('wordpressResult');
 
-        generateButton.disabled = true;
-        loading.style.display = 'block';
-        result.style.display = 'none';
-        error.style.display = 'none';
-        wordpressResult.style.display = 'none';
-
-        try {
-          // 현재 도메인을 기준으로 API 요청 URL 설정
-          const apiUrl = `${window.location.protocol}//${window.location.host}/api/generate-post`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              keyword,
-              autoPostToWordPress,
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!data.success) {
-            throw new Error(data.error || '포스팅 생성에 실패했습니다.');
-          }
-
-          currentBlogPost = data.blogPost;
-          currentKeyword = keyword;
-
-          blogPost.innerHTML = data.blogPost;
-          result.style.display = 'block';
-
-          // 워드프레스 결과 표시
-          if (data.wordpress) {
-            showWordPressResult(data.wordpress);
-          }
-        } catch (error) {
-          showError(error.message);
-        } finally {
-          generateButton.disabled = false;
-          loading.style.display = 'none';
-        }
-      }
-
-      async function postToWordPress() {
-        if (!currentBlogPost) {
-          showError('먼저 포스팅을 생성해주세요.');
+        if (!accessCode) {
+          showError('접근 코드를 입력해주세요.');
           return;
         }
 
-        const wordpressManualButton = document.getElementById(
-          'wordpressManualButton',
-        );
-        wordpressManualButton.disabled = true;
-        wordpressManualButton.textContent = '포스팅 중...';
-
         try {
-          // HTML에서 제목 추출
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = currentBlogPost;
-          const h1Element = tempDiv.querySelector('h1');
-          const title = h1Element
-            ? h1Element.textContent.trim()
-            : `${currentKeyword} 리뷰`;
-
-          // 현재 도메인을 기준으로 API 요청 URL 설정
-          const apiUrl = `${window.location.protocol}//${window.location.host}/api/post-to-wordpress`;
-          const response = await fetch(apiUrl, {
+          const response = await fetch('/api/verify-code', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              title: title,
-              content: currentBlogPost,
-              keyword: currentKeyword,
-            }),
+            body: JSON.stringify({ code: accessCode }),
           });
 
           const data = await response.json();
-          showWordPressResult(data);
-        } catch (error) {
-          showWordPressResult({
-            success: false,
-            message: error.message || '워드프레스 포스팅에 실패했습니다.',
-          });
-        } finally {
-          wordpressManualButton.disabled = false;
-          wordpressManualButton.textContent = '워드프레스에 포스팅';
-        }
-      }
 
-      function showWordPressResult(wordpressData) {
-        const wordpressResult = document.getElementById('wordpressResult');
-        const wordpressMessage = document.getElementById('wordpressMessage');
-        const wordpressUrl = document.getElementById('wordpressUrl');
-
-        if (wordpressData.success) {
-          wordpressResult.className = 'wordpress-result wordpress-success';
-          wordpressMessage.textContent = wordpressData.message;
-
-          if (wordpressData.postUrl) {
-            wordpressUrl.innerHTML = `<strong>포스트 URL:</strong> <a href="${wordpressData.postUrl}" target="_blank">${wordpressData.postUrl}</a>`;
+          if (data.success) {
+            // 세션 ID를 로컬 스토리지에 저장
+            localStorage.setItem('sessionId', data.sessionId);
+            // generator.html로 이동
+            window.location.href = 'generator.html';
           } else {
-            wordpressUrl.innerHTML = '';
+            showError(data.message || '잘못된 접근 코드입니다.');
           }
-        } else {
-          wordpressResult.className = 'wordpress-result wordpress-error';
-          wordpressMessage.textContent =
-            wordpressData.message || '워드프레스 포스팅에 실패했습니다.';
-          wordpressUrl.innerHTML = '';
+        } catch (error) {
+          showError('서버 오류가 발생했습니다.');
         }
-
-        wordpressResult.style.display = 'block';
       }
 
       function showError(message) {
@@ -553,32 +222,12 @@
         error.style.display = 'block';
       }
 
-      function copyContent() {
-        const copySuccess = document.getElementById('copySuccess');
-
-        // HTML 내용을 복사
-        navigator.clipboard
-          .writeText(currentBlogPost)
-          .then(() => {
-            copySuccess.style.display = 'block';
-            setTimeout(() => {
-              copySuccess.style.display = 'none';
-            }, 2000);
-          })
-          .catch(err => {
-            console.error('복사 실패:', err);
-            showError('복사에 실패했습니다.');
-          });
-      }
-
-      // Enter 키로 검색 실행
-      document
-        .getElementById('keyword')
-        .addEventListener('keypress', function (e) {
-          if (e.key === 'Enter') {
-            generatePost();
-          }
-        });
+      // Enter 키로 접근
+      document.getElementById('accessCode').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          checkAccessCode();
+        }
+      });
     </script>
   </body>
 </html>

@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>쿠팡 파트너스 블로그 포스팅 생성기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --primary-color: #346aff;
+        --primary-hover: #2b5cd9;
+        --text-color: #333;
+        --border-color: #ddd;
+        --bg-color: #f8f9fa;
+        --card-bg: #ffffff;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        --success-color: #28a745;
+        --success-hover: #218838;
+        --error-color: #dc3545;
+        --info-color: #17a2b8;
+        --info-hover: #138496;
+        --warning-color: #ffc107;
+      }
+
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 100%;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        word-break: keep-all;
+        line-height: 1.4;
+      }
+
+      .input-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      input[type='text'] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      input[type='text']:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(52, 106, 255, 0.1);
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem;
+        background-color: rgba(52, 106, 255, 0.05);
+        border-radius: 8px;
+      }
+
+      .checkbox-group input[type='checkbox'] {
+        margin-right: 0.75rem;
+        transform: scale(1.2);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+        font-size: 0.95rem;
+        word-break: keep-all;
+        color: var(--text-color);
+      }
+
+      button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        width: 100%;
+        transition: all 0.3s ease;
+        word-break: keep-all;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        text-align: center;
+        display: none;
+        margin: 1.5rem 0;
+        font-size: 0.95rem;
+        color: var(--primary-color);
+      }
+
+      .loading::after {
+        content: '';
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .error {
+        color: var(--error-color);
+        margin-top: 1rem;
+        display: none;
+        padding: 1rem;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+
+      .result {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        display: none;
+      }
+
+      .result #blogPost {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .result #blogPost * {
+        max-width: 100% !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .result #blogPost img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .wordpress-result {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .wordpress-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        border: 1px solid var(--success-color);
+        color: var(--success-color);
+      }
+
+      .wordpress-error {
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 1px solid var(--error-color);
+        color: var(--error-color);
+      }
+
+      .wordpress-url {
+        margin-top: 1rem;
+        word-break: break-all;
+      }
+
+      .wordpress-url a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .wordpress-url a:hover {
+        text-decoration: underline;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .button-group button {
+        flex: 1;
+      }
+
+      .copy-button {
+        background-color: var(--success-color);
+      }
+
+      .copy-button:hover {
+        background-color: var(--success-hover);
+      }
+
+      .wordpress-manual-button {
+        background-color: var(--info-color);
+      }
+
+      .wordpress-manual-button:hover {
+        background-color: var(--info-hover);
+      }
+
+      .copy-success {
+        color: var(--success-color);
+        margin-top: 1rem;
+        display: none;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+
+      .disclaimer {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: rgba(255, 193, 7, 0.1);
+        border: 1px solid var(--warning-color);
+        border-radius: 8px;
+        color: #856404;
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      /* 반응형 디자인 */
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .container {
+          padding: 1.5rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+
+        .button-group button {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 1.25rem;
+        }
+
+        input[type='text'] {
+          padding: 0.5rem;
+        }
+
+        button {
+          padding: 0.5rem 1rem;
+        }
+      }
+
+      /* 접근성 개선 */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      /* 포커스 스타일 */
+      :focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      /* 다크 모드 지원 */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text-color: #e1e1e1;
+          --bg-color: #1a1a1a;
+          --card-bg: #2d2d2d;
+          --border-color: #404040;
+        }
+
+        .disclaimer {
+          background-color: rgba(255, 193, 7, 0.2);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>쿠팡 파트너스 블로그 포스팅 생성기</h1>
+
+      <div class="input-group">
+        <label for="keyword">검색 키워드</label>
+        <input
+          type="text"
+          id="keyword"
+          placeholder="상품 키워드를 입력하세요"
+          aria-label="검색 키워드"
+        />
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="autoPostToWordPress" aria-label="워드프레스 자동 포스팅" />
+        <label for="autoPostToWordPress">워드프레스에 자동 포스팅 (초안 저장)</label>
+      </div>
+
+      <button onclick="generatePost()" id="generateButton" aria-label="포스팅 생성">
+        <span>포스팅 생성하기</span>
+      </button>
+
+      <div class="loading" id="loading" role="status" aria-live="polite">
+        포스팅을 생성하는 중입니다...
+      </div>
+
+      <div class="error" id="error" role="alert" aria-live="assertive"></div>
+
+      <div class="wordpress-result" id="wordpressResult" role="status" aria-live="polite">
+        <div id="wordpressMessage"></div>
+        <div class="wordpress-url" id="wordpressUrl"></div>
+      </div>
+
+      <div class="result" id="result">
+        <div id="blogPost"></div>
+        <div class="button-group">
+          <button class="copy-button" onclick="copyContent()" aria-label="HTML 복사">
+            <span>HTML 복사하기</span>
+          </button>
+          <button
+            class="wordpress-manual-button"
+            onclick="postToWordPress()"
+            id="wordpressManualButton"
+            aria-label="워드프레스에 포스팅"
+          >
+            <span>워드프레스에 포스팅</span>
+          </button>
+        </div>
+        <div class="copy-success" id="copySuccess" role="status" aria-live="polite">
+          복사되었습니다!
+        </div>
+      </div>
+
+      <div class="disclaimer" role="complementary">
+        <p>* 본 도구는 쿠팡 파트너스 활동을 통해 수수료를 제공받을 수 있습니다.</p>
+        <p>* 워드프레스 포스팅을 위해서는 서버의 환경변수 설정이 필요합니다.</p>
+      </div>
+    </div>
+
+    <script>
+      // 페이지 로드 시 세션 검증
+      window.addEventListener('load', async function() {
+        const sessionId = localStorage.getItem('sessionId');
+
+        if (!sessionId) {
+          alert('접근 권한이 없습니다. 메인 페이지로 이동합니다.');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/verify-session', {
+            headers: {
+              'x-session-id': sessionId
+            }
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            localStorage.removeItem('sessionId');
+            alert(data.message || '세션이 만료되었습니다. 메인 페이지로 이동합니다.');
+            window.location.href = 'index.html';
+          }
+        } catch (error) {
+          localStorage.removeItem('sessionId');
+          alert('서버 오류가 발생했습니다. 메인 페이지로 이동합니다.');
+          window.location.href = 'index.html';
+        }
+      });
+
+      let currentBlogPost = '';
+      let currentKeyword = '';
+
+      async function generatePost() {
+        const keyword = document.getElementById('keyword').value.trim();
+        const autoPostToWordPress = document.getElementById(
+          'autoPostToWordPress',
+        ).checked;
+
+        if (!keyword) {
+          showError('키워드를 입력해주세요.');
+          return;
+        }
+
+        const generateButton = document.getElementById('generateButton');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const error = document.getElementById('error');
+        const blogPost = document.getElementById('blogPost');
+        const wordpressResult = document.getElementById('wordpressResult');
+
+        generateButton.disabled = true;
+        loading.style.display = 'block';
+        result.style.display = 'none';
+        error.style.display = 'none';
+        wordpressResult.style.display = 'none';
+
+        try {
+          // 현재 도메인을 기준으로 API 요청 URL 설정
+          const apiUrl = `${window.location.protocol}//${window.location.host}/api/generate-post`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              keyword,
+              autoPostToWordPress,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.error || '포스팅 생성에 실패했습니다.');
+          }
+
+          currentBlogPost = data.blogPost;
+          currentKeyword = keyword;
+
+          blogPost.innerHTML = data.blogPost;
+          result.style.display = 'block';
+
+          // 워드프레스 결과 표시
+          if (data.wordpress) {
+            showWordPressResult(data.wordpress);
+          }
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          generateButton.disabled = false;
+          loading.style.display = 'none';
+        }
+      }
+
+      async function postToWordPress() {
+        if (!currentBlogPost) {
+          showError('먼저 포스팅을 생성해주세요.');
+          return;
+        }
+
+        const wordpressManualButton = document.getElementById(
+          'wordpressManualButton',
+        );
+        wordpressManualButton.disabled = true;
+        wordpressManualButton.textContent = '포스팅 중...';
+
+        try {
+          // HTML에서 제목 추출
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = currentBlogPost;
+          const h1Element = tempDiv.querySelector('h1');
+          const title = h1Element
+            ? h1Element.textContent.trim()
+            : `${currentKeyword} 리뷰`;
+
+          // 현재 도메인을 기준으로 API 요청 URL 설정
+          const apiUrl = `${window.location.protocol}//${window.location.host}/api/post-to-wordpress`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              title: title,
+              content: currentBlogPost,
+              keyword: currentKeyword,
+            }),
+          });
+
+          const data = await response.json();
+          showWordPressResult(data);
+        } catch (error) {
+          showWordPressResult({
+            success: false,
+            message: error.message || '워드프레스 포스팅에 실패했습니다.',
+          });
+        } finally {
+          wordpressManualButton.disabled = false;
+          wordpressManualButton.textContent = '워드프레스에 포스팅';
+        }
+      }
+
+      function showWordPressResult(wordpressData) {
+        const wordpressResult = document.getElementById('wordpressResult');
+        const wordpressMessage = document.getElementById('wordpressMessage');
+        const wordpressUrl = document.getElementById('wordpressUrl');
+
+        if (wordpressData.success) {
+          wordpressResult.className = 'wordpress-result wordpress-success';
+          wordpressMessage.textContent = wordpressData.message;
+
+          if (wordpressData.postUrl) {
+            wordpressUrl.innerHTML = `<strong>포스트 URL:</strong> <a href="${wordpressData.postUrl}" target="_blank">${wordpressData.postUrl}</a>`;
+          } else {
+            wordpressUrl.innerHTML = '';
+          }
+        } else {
+          wordpressResult.className = 'wordpress-result wordpress-error';
+          wordpressMessage.textContent =
+            wordpressData.message || '워드프레스 포스팅에 실패했습니다.';
+          wordpressUrl.innerHTML = '';
+        }
+
+        wordpressResult.style.display = 'block';
+      }
+
+      function showError(message) {
+        const error = document.getElementById('error');
+        error.textContent = message;
+        error.style.display = 'block';
+      }
+
+      function copyContent() {
+        const copySuccess = document.getElementById('copySuccess');
+
+        // HTML 내용을 복사
+        navigator.clipboard
+          .writeText(currentBlogPost)
+          .then(() => {
+            copySuccess.style.display = 'block';
+            setTimeout(() => {
+              copySuccess.style.display = 'none';
+            }, 2000);
+          })
+          .catch(err => {
+            console.error('복사 실패:', err);
+            showError('복사에 실패했습니다.');
+          });
+      }
+
+      // Enter 키로 검색 실행
+      document
+        .getElementById('keyword')
+        .addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            generatePost();
+          }
+        });
+    </script>
+  </body>
+</html>
