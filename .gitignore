@@ -42,6 +42,3 @@ next-env.d.ts
 
 # OS specific
 Thumbs.db
-
-# 프롬프트 파일들 (민감한 비즈니스 로직)
-prompts/
