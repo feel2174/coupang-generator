@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const path = require('path');
 const moment = require('moment');
 const fs = require('fs');
+const FormData = require('form-data');
 
 const app = express();
 app.use(express.json());
@@ -270,21 +271,76 @@ async function postToWordPress(title, content, keyword) {
       'base64',
     );
 
+    // HTML에서 첫 번째 이미지 URL 추출
+    const imageMatch = content.match(/<img[^>]+src="([^">]+)"/);
+    let featuredImageId = null;
+
+    if (imageMatch) {
+      const imageUrl = imageMatch[1];
+      console.log('대표 이미지 URL 발견:', imageUrl);
+
+      try {
+        // 이미지 다운로드
+        const imageResponse = await axios({
+          method: 'GET',
+          url: imageUrl,
+          responseType: 'arraybuffer'
+        });
+
+        // 임시 파일로 저장
+        const timestamp = Date.now();
+        const randomStr = Math.random().toString(36).substring(2, 8);
+        const tempFileName = `temp-image-${timestamp}-${randomStr}.jpg`;
+        const tempFilePath = path.join(__dirname, tempFileName);
+
+        fs.writeFileSync(tempFilePath, imageResponse.data);
+
+        // FormData 생성
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(tempFilePath), {
+          filename: tempFileName,
+          contentType: 'image/jpeg'
+        });
+
+        // 워드프레스에 이미지 업로드
+        const uploadResponse = await axios({
+          method: 'POST',
+          url: `${WP_URL}/media`,
+          headers: {
+            ...formData.getHeaders(),
+            Authorization: `Basic ${authString}`,
+          },
+          data: formData
+        });
+
+        if (uploadResponse.data && uploadResponse.data.id) {
+          featuredImageId = uploadResponse.data.id;
+          console.log('대표 이미지 업로드 성공:', featuredImageId);
+        }
+
+        // 임시 파일 삭제
+        fs.unlinkSync(tempFilePath);
+
+      } catch (imageError) {
+        console.error('대표 이미지 업로드 실패:', imageError);
+      }
+    }
+
     // 포스트 데이터 준비
     const postData = {
       title: title,
       content: content,
-      status: 'draft', // 'publish' 또는 'draft'
+      status: 'draft',
       categories: [3],
       excerpt: `${keyword}에 대한 상세한 리뷰와 정보를 확인해보세요.`,
-      // categories와 tags는 ID 배열이 필요하므로 제거
-      // meta 필드는 기본 REST API에서 지원되지 않을 수 있으므로 제거
+      featured_media: featuredImageId,
     };
 
     console.log('워드프레스 API 요청:', {
       url: wpApiUrl,
       title: postData.title,
       status: postData.status,
+      featuredImageId: featuredImageId,
     });
 
     const response = await axios({
@@ -304,6 +360,7 @@ async function postToWordPress(title, content, keyword) {
       title: response.data.title.rendered,
       status: response.data.status,
       link: response.data.link,
+      featuredImageId: featuredImageId,
     });
 
     return {
@@ -311,6 +368,7 @@ async function postToWordPress(title, content, keyword) {
       postId: response.data.id,
       postUrl: response.data.link,
       status: response.data.status,
+      featuredImageId: featuredImageId,
       message: '워드프레스에 성공적으로 포스팅되었습니다.',
     };
   } catch (error) {
