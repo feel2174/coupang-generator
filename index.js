@@ -284,7 +284,7 @@ async function postToWordPress(title, content, keyword) {
         const imageResponse = await axios({
           method: 'GET',
           url: imageUrl,
-          responseType: 'arraybuffer'
+          responseType: 'arraybuffer',
         });
 
         // 임시 파일로 저장
@@ -299,7 +299,7 @@ async function postToWordPress(title, content, keyword) {
         const formData = new FormData();
         formData.append('file', fs.createReadStream(tempFilePath), {
           filename: tempFileName,
-          contentType: 'image/jpeg'
+          contentType: 'image/jpeg',
         });
 
         // 워드프레스에 이미지 업로드
@@ -310,7 +310,7 @@ async function postToWordPress(title, content, keyword) {
             ...formData.getHeaders(),
             Authorization: `Basic ${authString}`,
           },
-          data: formData
+          data: formData,
         });
 
         if (uploadResponse.data && uploadResponse.data.id) {
@@ -320,7 +320,6 @@ async function postToWordPress(title, content, keyword) {
 
         // 임시 파일 삭제
         fs.unlinkSync(tempFilePath);
-
       } catch (imageError) {
         console.error('대표 이미지 업로드 실패:', imageError);
       }
@@ -445,7 +444,7 @@ function prepareContentForWordPress(htmlContent) {
 }
 
 // API 엔드포인트
-app.post('/generate-post', async (req, res) => {
+app.post('/api/generate-post', async (req, res) => {
   console.log('새로운 요청 수신');
 
   try {
@@ -491,7 +490,7 @@ app.post('/generate-post', async (req, res) => {
 });
 
 // 워드프레스 수동 포스팅 엔드포인트
-app.post('/post-to-wordpress', async (req, res) => {
+app.post('/api/post-to-wordpress', async (req, res) => {
   console.log('워드프레스 수동 포스팅 요청');
 
   try {

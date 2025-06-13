@@ -438,7 +438,9 @@
         wordpressResult.style.display = 'none';
 
         try {
-          const response = await fetch('/generate-post', {
+          // 현재 도메인을 기준으로 API 요청 URL 설정
+          const apiUrl = `${window.location.protocol}//${window.location.host}/api/generate-post`;
+          const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -494,7 +496,9 @@
             ? h1Element.textContent.trim()
             : `${currentKeyword} 리뷰`;
 
-          const response = await fetch('/post-to-wordpress', {
+          // 현재 도메인을 기준으로 API 요청 URL 설정
+          const apiUrl = `${window.location.protocol}//${window.location.host}/api/post-to-wordpress`;
+          const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
