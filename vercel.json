@@ -8,12 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/api/generate-post",
+      "src": "/api/(.*)",
       "dest": "/index.js"
     },
     {
-      "src": "/api/post-to-wordpress",
-      "dest": "/index.js"
+      "src": "/generator.html",
+      "dest": "/public/generator.html"
     },
     {
       "src": "/(.*)",
