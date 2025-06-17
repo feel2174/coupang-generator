@@ -10,26 +10,30 @@
         background: #f5f7fa;
         margin: 0;
         padding: 0;
+        min-height: 100vh;
       }
       .container {
         max-width: 1000px;
-        margin: 30px auto;
+        margin: 20px auto;
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        padding: 30px 20px 40px 20px;
+        padding: 20px;
+        box-sizing: border-box;
       }
       h1 {
         color: #e60023;
         text-align: center;
         margin-bottom: 30px;
         font-size: 2rem;
+        word-break: keep-all;
       }
       .search-bar {
         display: flex;
         justify-content: center;
         margin-bottom: 30px;
         gap: 10px;
+        flex-wrap: wrap;
       }
       .search-bar input[type="text"] {
         width: 300px;
@@ -37,6 +41,7 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 16px;
+        box-sizing: border-box;
       }
       .search-bar button {
         background: #296dff;
@@ -47,6 +52,7 @@
         font-size: 16px;
         cursor: pointer;
         transition: background 0.2s;
+        white-space: nowrap;
       }
       .search-bar button:hover {
         background: #1d4fcc;
@@ -64,20 +70,22 @@
         border-radius: 10px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         display: flex;
-        align-items: stretch;
-        padding: 20px 18px;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
         gap: 18px;
+        box-sizing: border-box;
       }
       .product-image {
-        width: 150px;
-        height: 150px;
+        width: 100%;
+        max-width: 300px;
+        height: auto;
         object-fit: contain;
         border-radius: 8px;
         background: #f8f8f8;
-        flex-shrink: 0;
       }
       .product-info {
-        flex: 1;
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -87,17 +95,20 @@
         font-weight: bold;
         color: #e60023;
         margin-bottom: 8px;
+        word-break: keep-all;
       }
       .product-desc {
         font-size: 0.97rem;
         color: #222;
         margin-bottom: 8px;
         min-height: 36px;
+        word-break: keep-all;
       }
       .product-meta {
         font-size: 0.93rem;
         color: #444;
         margin-bottom: 8px;
+        word-break: keep-all;
       }
       .product-checks {
         margin-bottom: 8px;
@@ -112,13 +123,14 @@
         color: #fff;
         border: none;
         border-radius: 6px;
-        padding: 10px 0;
+        padding: 12px 0;
         font-size: 1.1rem;
         font-weight: bold;
         cursor: pointer;
         width: 100%;
         margin-top: 8px;
         transition: background 0.2s;
+        box-sizing: border-box;
       }
       .product-btn:hover {
         background: #1d4fcc;
@@ -127,18 +139,59 @@
         color: #e60023;
         text-align: center;
         margin-bottom: 20px;
+        word-break: keep-all;
       }
-      @media (max-width: 700px) {
-        .products-list {
-          flex-direction: column;
-          align-items: center;
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .button-group button {
+        flex: 1;
+        min-width: 200px;
+      }
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          padding: 15px;
         }
-        .product-card {
-          width: 95vw;
-          min-width: 0;
+        .search-bar {
+          flex-direction: column;
+          align-items: stretch;
         }
         .search-bar input[type="text"] {
-          width: 60vw;
+          width: 100%;
+        }
+        .search-bar button {
+          width: 100%;
+        }
+        .button-group {
+          flex-direction: column;
+        }
+        .button-group button {
+          width: 100%;
+        }
+        #mainTitle {
+          font-size: 1.5em !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .container {
+          margin: 5px;
+          padding: 10px;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .product-card {
+          padding: 15px;
+        }
+        .product-title {
+          font-size: 1rem;
+        }
+        .product-desc {
+          font-size: 0.9rem;
         }
       }
     </style>
@@ -205,7 +258,7 @@
           `;
           lastHtmlContent = blogContent.innerHTML;
           lastKeyword = keyword;
-          lastTitle = `${keyword} TOP 5 추천 - 지금 꼭 봐야 할 베스트 5가지 이유!`;
+          lastTitle = `${keyword} TOP 5 추천 - 실사용 후기와 추천 포인트 총정리`;
           const mainTitleDiv = document.getElementById('mainTitle');
           if (mainTitleDiv) mainTitleDiv.textContent = lastTitle;
         } catch (err) {
