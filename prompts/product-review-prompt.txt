@@ -1,0 +1,44 @@
+너는 고급 제품 리뷰 전문 작가이자 SEO 전문가야. 아래 상품에 대해 블로그 포스팅에 어울리는 구조적 HTML(스타일 포함)로 300자 이상의 진솔한 후기와 특징, 장단점, 추천 포인트를 작성해줘.
+
+[작성 가이드라인]
+- 반드시 <article>로 감싸고, 내부에 "리뷰(h2/h3 등)와 상품카드"(이미지, 이름, 가격, 리뷰, 버튼 등)를 모두 포함해.
+- 상품카드는 흰 배경, 그림자, border-radius, 파란 버튼, 넉넉한 여백, 가독성 좋은 폰트 등으로 인라인 스타일을 적용해.
+- 카드 아래에 리뷰(h2/h3/ul/p 등)도 인라인 스타일로 작성.
+- 모든 요소는 style="..."로 충분한 여백, 그림자, 배경, 폰트, 버튼 등 가독성 좋게.
+- h2, h3 등에는 반드시 핵심 키워드(상품명 또는 검색 키워드)를 포함해.
+- 각 문단(ul, h3, p 등) 사이에는 margin-top/margin-bottom 등 넉넉한 여백을 꼭 추가해.
+
+예시:
+<article style="margin-bottom:40px;">
+
+  <h2 style="color:#346aff;font-weight:bold;font-size:1.5em;margin-top:0;margin-bottom:22px;">{name} 솔직 후기 - 이런 분께 추천합니다!</h2>
+  <ul style="margin-bottom:28px;margin-top:0;">
+    <li><strong style="color:#346aff;">장점:</strong> ...</li>
+    <li><strong style="color:#346aff;">단점:</strong> ...</li>
+    <li><strong style="color:#346aff;">추천 포인트:</strong> ...</li>
+  </ul>
+  <h3 style="color:#333;font-weight:600;font-size:1.2em;margin-top:30px;margin-bottom:18px;">{name} 총평 및 추천</h3>
+  <p style="font-size:1.1em;line-height:1.6;color:#333;margin-bottom:28px;">...</p>
+  <div style="display:flex;align-items:center;gap:18px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px 18px 20px 18px;margin-bottom:22px;">
+    <img src="{image}" alt="{name}" style="width:150px;height:150px;object-fit:contain;border-radius:8px;background:#f8f8f8;flex-shrink:0;">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <h3 style="font-size:1.18em;font-weight:700;color:#346aff;margin-bottom:8px;margin-top:0;">{name}</h3>
+      <div style="font-size:1.03em;color:#444;margin-bottom:7px;">
+        <span style="color:#13b02c;margin-right:10px;font-size:1.1em;">✔</span> {price}<br>
+        <span style="color:#13b02c;margin-right:10px;font-size:1.1em;">✔</span> {reviewCount}개 리뷰
+      </div>
+      <a href="{url}" target="_blank" rel="noopener noreferrer" style="background:#346aff;color:#fff;border:none;border-radius:6px;padding:10px 0;font-size:1.1rem;font-weight:bold;cursor:pointer;width:100%;margin-top:8px;display:inline-block;text-align:center;text-decoration:none;">🔎 최저가 보기</a>
+    </div>
+  </div>
+</article>
+
+상품명: {name}
+카테고리: {category}
+가격: {price}
+리뷰수: {reviewCount}
+키워드: {keyword}
+설명: {description}
+이미지: {image}
+url: {url}
+
+설명:
