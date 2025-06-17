@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>쿠팡 상품 리스트</title>
+    <style>
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      h1 {
+        color: #e60023;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2rem;
+        word-break: keep-all;
+      }
+      .search-bar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .search-bar input[type="text"] {
+        width: 300px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      .search-bar button {
+        background: #296dff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+      }
+      .search-bar button:hover {
+        background: #1d4fcc;
+      }
+      .products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+      }
+      .product-card {
+        width: 100%;
+        margin: 0;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        gap: 18px;
+        box-sizing: border-box;
+      }
+      .product-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f8f8f8;
+      }
+      .product-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .product-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #e60023;
+        margin-bottom: 8px;
+        word-break: keep-all;
+      }
+      .product-desc {
+        font-size: 0.97rem;
+        color: #222;
+        margin-bottom: 8px;
+        min-height: 36px;
+        word-break: keep-all;
+      }
+      .product-meta {
+        font-size: 0.93rem;
+        color: #444;
+        margin-bottom: 8px;
+        word-break: keep-all;
+      }
+      .product-checks {
+        margin-bottom: 8px;
+      }
+      .product-checks span {
+        color: #13b02c;
+        margin-right: 10px;
+        font-size: 1.1em;
+      }
+      .product-btn {
+        background: #296dff;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 0;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 8px;
+        transition: background 0.2s;
+        box-sizing: border-box;
+      }
+      .product-btn:hover {
+        background: #1d4fcc;
+      }
+      .error {
+        color: #e60023;
+        text-align: center;
+        margin-bottom: 20px;
+        word-break: keep-all;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .button-group button {
+        flex: 1;
+        min-width: 200px;
+      }
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          padding: 15px;
+        }
+        .search-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .search-bar input[type="text"] {
+          width: 100%;
+        }
+        .search-bar button {
+          width: 100%;
+        }
+        .button-group {
+          flex-direction: column;
+        }
+        .button-group button {
+          width: 100%;
+        }
+        #mainTitle {
+          font-size: 1.5em !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .container {
+          margin: 5px;
+          padding: 10px;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .product-card {
+          padding: 15px;
+        }
+        .product-title {
+          font-size: 1rem;
+        }
+        .product-desc {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+        <div id="mainTitle" style="font-size:2em;font-weight:900;color:#222;"></div>
+        <button id="copyTitleBtn" class="product-btn" style="background:#e60023;flex:none;padding:8px 18px;font-size:1em;" onclick="copyTitle()">제목 복사</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="keyword" placeholder="검색할 상품 키워드 입력" />
+        <button onclick="searchProducts()">검색</button>
+      </div>
+      <div class="error" id="error"></div>
+      <div class="button-group" style="display:flex; gap:10px; margin-bottom:18px;">
+        <button id="copyHtmlBtn" class="product-btn" style="flex:1; background:#28a745;" onclick="copyHtmlContent()">HTML 복사하기</button>
+        <button id="postWpBtn" class="product-btn" style="flex:1; background:#346aff;" onclick="postToWordPress()">워드프레스 임시글로 포스팅</button>
+      </div>
+      <div id="loading" style="display:none; text-align:center; color:#346aff; font-size:1.1em; margin-bottom:12px;">🔄 검색 결과를 불러오는 중입니다...</div>
+      <div class="success" id="successMsg" style="display:none; color:#28a745; margin-bottom:10px;"></div>
+      <div class="error" id="wpError" style="display:none;"></div>
+      <div id="blogContent"></div>
+    </div>
+    <script>
+      let lastHtmlContent = '';
+      let lastKeyword = '';
+      let lastTitle = '';
+
+      async function searchProducts() {
+        const keyword = document.getElementById('keyword').value.trim();
+        const errorDiv = document.getElementById('error');
+        const blogContent = document.getElementById('blogContent');
+        const searchBtn = document.querySelector('.search-bar button');
+        const copyBtn = document.getElementById('copyHtmlBtn');
+        const postBtn = document.getElementById('postWpBtn');
+        const loadingDiv = document.getElementById('loading');
+        errorDiv.textContent = '';
+        if (blogContent) blogContent.innerHTML = '';
+        if (!keyword) {
+          errorDiv.textContent = '키워드를 입력하세요.';
+          return;
+        }
+        try {
+          if (searchBtn) searchBtn.disabled = true;
+          if (copyBtn) copyBtn.disabled = true;
+          if (postBtn) postBtn.disabled = true;
+          if (loadingDiv) loadingDiv.style.display = 'block';
+          const res = await fetch(`/coupang-products?keyword=${encodeURIComponent(keyword)}&limit=5`);
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error || '상품을 불러오지 못했습니다.');
+          if (!data.products.length) {
+            errorDiv.textContent = '검색 결과가 없습니다.';
+            return;
+          }
+          if (!blogContent) {
+            alert('blogContent 영역이 없습니다. 관리자에게 문의하세요.');
+            return;
+          }
+          blogContent.innerHTML = `
+            <article style="display:flex; flex-direction:column; gap:20px;">
+                ${data.products.map(product => product.gptReview ? product.gptReview : '').join('')}
+</article>
+          `;
+          lastHtmlContent = blogContent.innerHTML;
+          lastKeyword = keyword;
+          lastTitle = `${keyword} TOP 5 추천 - 실사용 후기와 추천 포인트 총정리`;
+          const mainTitleDiv = document.getElementById('mainTitle');
+          if (mainTitleDiv) mainTitleDiv.textContent = lastTitle;
+        } catch (err) {
+          errorDiv.textContent = err.message;
+        } finally {
+          if (searchBtn) searchBtn.disabled = false;
+          if (copyBtn) copyBtn.disabled = false;
+          if (postBtn) postBtn.disabled = false;
+          if (loadingDiv) loadingDiv.style.display = 'none';
+        }
+      }
+      // Enter 키로 검색
+      document.getElementById('keyword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') searchProducts();
+      });
+
+      // HTML 복사하기
+      function copyHtmlContent() {
+        const blogContent = document.getElementById('blogContent');
+        if (!blogContent) return;
+        navigator.clipboard.writeText(blogContent.innerHTML).then(() => {
+          const msg = document.getElementById('successMsg');
+          msg.textContent = 'HTML이 복사되었습니다!';
+          msg.style.display = 'block';
+          setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        });
+      }
+
+      // 워드프레스 임시글 포스팅
+      async function postToWordPress() {
+        if (!lastHtmlContent) return;
+        const btn = document.getElementById('postWpBtn');
+        const msg = document.getElementById('successMsg');
+        const err = document.getElementById('wpError');
+        btn.disabled = true;
+        msg.style.display = 'none';
+        err.style.display = 'none';
+        try {
+          const res = await fetch('/post-to-wordpress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: lastTitle,
+              content: lastHtmlContent,
+              keyword: lastKeyword
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            msg.textContent = '워드프레스 임시글로 성공적으로 포스팅되었습니다!';
+            msg.style.display = 'block';
+          } else {
+            err.textContent = data.message || '워드프레스 포스팅에 실패했습니다.';
+            err.style.display = 'block';
+          }
+        } catch (e) {
+          err.textContent = '워드프레스 포스팅 중 오류가 발생했습니다.';
+          err.style.display = 'block';
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      function copyTitle() {
+        const mainTitleDiv = document.getElementById('mainTitle');
+        if (!mainTitleDiv) return;
+        navigator.clipboard.writeText(mainTitleDiv.textContent).then(() => {
+          const msg = document.getElementById('successMsg');
+          msg.textContent = '제목이 복사되었습니다!';
+          msg.style.display = 'block';
+          setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>

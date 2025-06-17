@@ -7,10 +7,12 @@ const path = require('path');
 const moment = require('moment');
 const fs = require('fs');
 const FormData = require('form-data');
+const coupangProductsApi = require('./coupang-products-api');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/coupang-products', coupangProductsApi);
 
 // API 키 확인
 if (!process.env.OPENAI_API_KEY) {
@@ -240,9 +242,8 @@ async function generateBlogPost(products, keyword) {
 
 
 <!-- 쿠팡 파트너스 안내문구 -->
-<div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: 14px; color: #666; text-align: center;">
+<div style="margin-top: 20px; padding: 15px; font-size: 12px; color: #666; text-align: center;">
   <a href="https://link.coupang.com/a/cukenB" target="_blank" rel="noopener noreferrer">
-    <img src="https://static.coupangcdn.com/image/coupang/common/logo_coupang_w350.png" alt="쿠팡 프로모션" style="max-width:200px; margin-bottom:8px;">
     <div>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
   </a>
 </div>`;
