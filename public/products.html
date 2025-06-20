@@ -254,11 +254,25 @@
           blogContent.innerHTML = `
             <article style="display:flex; flex-direction:column; gap:20px;">
                 ${data.products.map(product => product.gptReview ? product.gptReview : '').join('')}
+                <p style="font-size:0.98em;color:#888;margin-top:30px;margin-bottom:0;">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
 </article>
           `;
           lastHtmlContent = blogContent.innerHTML;
           lastKeyword = keyword;
-          lastTitle = `${keyword} TOP 5 추천 - 실사용 후기와 추천 포인트 총정리`;
+          // lastTitle = `${keyword} TOP 5 추천 - 실사용 후기와 추천 포인트 총정리`;
+          const titles = [
+  `${keyword} TOP 5! 실제 구매자들이 극찬한 이유는?`,
+  `후회 없는 선택! ${keyword} 베스트 5 완벽 비교 & 리얼 후기`,
+  `이걸 안 보면 손해! ${keyword} 인기상품 5종 솔직 리뷰`,
+  `구매 전 필독! ${keyword} TOP 5, 진짜 후기와 장단점 공개`,
+  `내돈내산 ${keyword} BEST 5, 왜 이 제품들이 1위일까?`,
+  `실제 사용자가 뽑은 ${keyword} 추천 5선 | 장점·단점·후기 총정리`,
+  `이것만 보면 끝! ${keyword} 인기상품 5종 비교+리얼 후기`,
+  `고민 끝! ${keyword} TOP 5, 구매 전 꼭 봐야 할 리얼 리뷰`,
+  `지금 가장 잘 나가는 ${keyword} 5종, 솔직 후기와 추천 포인트`
+];
+// 랜덤 선택
+          lastTitle = titles[Math.floor(Math.random() * titles.length)];
           const mainTitleDiv = document.getElementById('mainTitle');
           if (mainTitleDiv) mainTitleDiv.textContent = lastTitle;
         } catch (err) {
