@@ -101,7 +101,7 @@ async function searchCoupangProducts(keyword) {
   try {
     const baseUrl =
       '/v2/providers/affiliate_open_api/apis/openapi/v1/products/search';
-    const queryParams = `keyword=${encodeURIComponent(keyword)}&limit=1`;
+    const queryParams = `keyword=${encodeURIComponent(keyword)}&subId=wordpress&limit=1`;
     const url = `${baseUrl}?${queryParams}`;
 
     console.log('API URL 구성:', {

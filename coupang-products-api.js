@@ -27,7 +27,7 @@ function generateCoupangSignature(method, url) {
 async function searchCoupangProducts(keyword, limit = 5) {
   const baseUrl =
     '/v2/providers/affiliate_open_api/apis/openapi/v1/products/search';
-  const queryParams = `keyword=${encodeURIComponent(keyword)}&limit=${limit}`;
+  const queryParams = `keyword=${encodeURIComponent(keyword)}&subId=wordpress&limit=${limit}`;
   const url = `${baseUrl}?${queryParams}`;
   const authorization = generateCoupangSignature('GET', url);
   const response = await axios({
@@ -74,7 +74,7 @@ async function generateProductReview(product, keyword) {
     .replace(/{keyword}/g, keyword)
     .replace(/{description}/g, product.description)
     .replace(/{image}/g, product.image || product.productImage || '')
-    .replace(/{url}/g, product.url);
+    .replace(/{url}/g, product.url || product.productUrl || '');
   const completion = await openai.chat.completions.create({
     model: 'gpt-4.1',
     messages: [
