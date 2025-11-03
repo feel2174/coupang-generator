@@ -218,20 +218,25 @@ async function generateBlogPost(products, keyword) {
     console.log('GPT API 요청 준비:', { prompt });
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1',
+      model: 'gpt-4.1-nano-2025-04-14',
       messages: [
         {
           role: 'system',
           content:
-            '당신은 SEO 최적화와 사용자 경험을 모두 고려하는 전문 콘텐츠 마케터입니다. 검색엔진에서 상위 노출되면서도 독자가 끝까지 읽고 싶어하는 매력적인 리뷰를 작성해주세요. 감정적 어필과 논리적 정보 제공의 균형을 맞춰 독자의 구매 결정을 돕는 고품질 콘텐츠를 만들어주세요.',
+          `당신은 SEO 전문 작가이자 리뷰 콘텐츠 전문가입니다.
+          - 반드시 주어진 HTML 템플릿 구조를 유지하고, 각 섹션을 300자 이상으로 작성하세요.
+          - {keyword}를 H1, H2, H3에 포함하고 자연스럽게 반복하세요.
+          - 문장은 독자가 끝까지 읽게 만들 만큼 매력적으로 작성하세요.
+          - 광고 문구 대신 진솔하고 구체적인 사용자 경험을 담으세요.
+          - HTML 인라인 스타일과 구조는 절대 변경하지 마세요.`
         },
         {
           role: 'user',
           content: prompt,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 3500,
+      temperature: 1, // 더 안정적인 SEO용 톤
+      max_completion_tokens: 3500, // HTML+리뷰 충분히 커버
     });
 
     console.log('GPT API 응답:', completion.choices[0].message);
